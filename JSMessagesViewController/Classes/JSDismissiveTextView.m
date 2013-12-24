@@ -118,8 +118,8 @@
     
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
-//<<<<<<< HEAD
   
+//<<<<<<< HEAD
     UIWindow *panWindow = [[UIApplication sharedApplication] keyWindow];
     CGPoint location = [pan locationInView:panWindow];
     CGPoint velocity = [pan velocityInView:panWindow];

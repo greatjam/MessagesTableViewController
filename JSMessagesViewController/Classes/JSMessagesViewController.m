@@ -473,6 +473,7 @@
 
 - (void)keyboardWillShowHide:(NSNotification *)notification
 {
+//<<<<<<< HEAD
     CGRect keyboardRect = [[notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	UIViewAnimationCurve curve = [[notification.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
 	double duration = [[notification.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
@@ -501,7 +502,36 @@
                                                                 - inputViewFrame.size.height];
                      }
                      completion:nil];
+//=======
+//  CGRect keyboardRect = [[notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+//  UIViewAnimationCurve curve = [[notification.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
+//  double duration = [[notification.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+//
+//  CGFloat keyboardY = [self.view convertRect:keyboardRect fromView:nil].origin.y;
+//  CGRect inputViewFrame = self.messageInputView.frame;
+//  CGFloat inputViewFrameY = keyboardY - inputViewFrame.size.height;
+//  
+//  [UIView beginAnimations:nil context:NULL];
+//  [UIView setAnimationCurve:curve];
+//  [UIView setAnimationDuration:duration];
+//  
+//  // for ipad modal form presentations
+//  CGFloat messageViewFrameBottom = self.view.frame.size.height - inputViewFrame.size.height;
+//  if(inputViewFrameY > messageViewFrameBottom)
+//    inputViewFrameY = messageViewFrameBottom;
+//  self.messageInputView.frame = CGRectMake(inputViewFrame.origin.x,
+//                                           inputViewFrameY,
+//                                           inputViewFrame.size.width,
+//                                           inputViewFrame.size.height);
+//
+//  UIEdgeInsets insets = self.originalTableViewContentInset;
+//  insets.bottom = self.view.frame.size.height - self.messageInputView.frame.origin.y - inputViewFrame.size.height;
+//  self.tableView.contentInset = insets;
+//  self.tableView.scrollIndicatorInsets = insets;
+//  [UIView commitAnimations];
+//>>>>>>> adjust keyboard animation
 }
+
 
 #pragma mark - Dismissive text view delegate
 
