@@ -43,8 +43,7 @@ extern CGFloat const kJSAvatarImageSize;
  *
  *  @return A new image object for the specified originalImage (cropped as specified), or `nil` if originalImage is not a valid, initialized image object.
 */
-+ (UIImage *)avatarImage:(UIImage *)originalImage
-         croppedToCircle:(BOOL)croppedToCircle;
++ (UIImage *)avatarImage:(UIImage *)originalImage;
 
 /**
  *  Returns the image object associated with the specified filename. The image is cropped to a circle if the value of croppedToCircle is `YES`, otherwise the image is cropped to a square. The image has a glossy, iOS 6 appearance.
