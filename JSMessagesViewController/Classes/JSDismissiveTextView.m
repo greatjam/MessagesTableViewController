@@ -118,7 +118,8 @@
     
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
-    
+//<<<<<<< HEAD
+  
     UIWindow *panWindow = [[UIApplication sharedApplication] keyWindow];
     CGPoint location = [pan locationInView:panWindow];
     CGPoint velocity = [pan velocityInView:panWindow];
@@ -187,7 +188,33 @@
                     [self.keyboardDelegate keyboardDidScrollToPoint:CGPointMake(0.0f, newKeyboardY)];
             }
             break;
+//=======
+//  
+//    if (pan.state == UIGestureRecognizerStateBegan) {
+//      [UIView animateWithDuration:0.3
+//                            delay:0
+//                          options:UIViewAnimationOptionCurveEaseOut
+//                       animations:^{
+//                         self.keyboardView.frame = CGRectMake(0.0f,
+//                                                              screenHeight,
+//                                                              self.keyboardView.frame.size.width,
+//                                                              self.keyboardView.frame.size.height);
+//                         
+//                         if(self.keyboardDelegate && [self.keyboardDelegate respondsToSelector:@selector(keyboardWillBeDismissed)])
+//                           [self.keyboardDelegate keyboardWillBeDismissed];
+//                       }
+//                       completion:^(BOOL finished) {
+//                         self.keyboardView.hidden = YES;
+//                         self.keyboardView.frame = CGRectMake(0.0f,
+//                                                              self.previousKeyboardY,
+//                                                              self.keyboardView.frame.size.width,
+//                                                              self.keyboardView.frame.size.height);
+//                         [self resignFirstResponder];
+//                       }];
+//>>>>>>> pan to hide input view
     }
+
+
 }
 
 @end
