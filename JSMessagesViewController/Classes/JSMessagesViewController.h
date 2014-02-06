@@ -13,7 +13,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "JSMessageTableView.h"
 #import "JSMessageData.h"
 #import "JSBubbleMessageCell.h"
 #import "JSMessageInputView.h"
@@ -150,7 +149,7 @@
 /**
  *  An instance of `JSMessagesViewController` is a subclass of `UIViewController` specialized to display a messaging interface.
  */
-@interface JSMessagesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextViewDelegate>
+@interface JSMessagesViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UITextViewDelegate>
 
 /**
  *  The object that acts as the delegate of the receiving messages view.
@@ -165,7 +164,7 @@
 /**
  *  Returns the table view that displays the messages in `JSMessagesViewController`.
  */
-@property (weak, nonatomic, readonly) JSMessageTableView *tableView;
+@property (weak, nonatomic, readonly) UICollectionView *contentView;
 
 /**
  *  Returns the message input view with which new messages are composed.
@@ -212,11 +211,11 @@
  *  @see JSMessagesViewDelegate.
  *
  *  @param indexPath An index path that identifies a row in the table view by its row index and its section index.
- *  @param position  A constant defined in `UITableViewScrollPosition` that identifies a relative position in the receiving table view.
+ *  @param position  A constant defined in `UICollectionViewScrollPosition` that identifies a relative position in the receiving table view.
  *  @param animated  `YES` if you want to animate the change in position, `NO` if it should be immediate.
  */
 - (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath
-			  atScrollPosition:(UITableViewScrollPosition)position
+			  atScrollPosition:(UICollectionViewScrollPosition)position
 					  animated:(BOOL)animated;
 
 @end

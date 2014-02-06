@@ -15,6 +15,9 @@
 #import "JSMessagesViewController.h"
 #import "JSMessageTextView.h"
 #import "NSString+JSMessagesView.h"
+#import "JSMessagesLayout.h"
+
+static NSString * const kReuseCellIdentifier = @"kReuseCellIdentifier";
 
 @interface JSMessagesViewController () <JSDismissiveTextViewDelegate>
 
@@ -30,8 +33,8 @@
 - (BOOL)shouldAllowScroll;
 
 - (void)layoutAndAnimateMessageInputTextView:(UITextView *)textView;
-- (void)setTableViewInsetsWithBottomValue:(CGFloat)bottom;
-- (UIEdgeInsets)tableViewInsetsWithBottomValue:(CGFloat)bottom;
+- (void)setContentViewInsetsWithBottomValue:(CGFloat)bottom;
+- (UIEdgeInsets)contentViewInsetsWithBottomValue:(CGFloat)bottom;
 
 - (void)handleWillShowKeyboardNotification:(NSNotification *)notification;
 - (void)handleWillHideKeyboardNotification:(NSNotification *)notification;
@@ -62,12 +65,15 @@
     CGFloat inputViewHeight = (inputViewStyle == JSMessageInputViewStyleFlat) ? 45.0f : 40.0f;
     
     CGRect tableFrame = CGRectMake(0.0f, 0.0f, size.width, size.height - inputViewHeight);
-	JSMessageTableView *tableView = [[JSMessageTableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
-	tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	tableView.dataSource = self;
-	tableView.delegate = self;
-	[self.view addSubview:tableView];
-	_tableView = tableView;
+    JSMessagesLayout *layout = [[JSMessagesLayout alloc] init];
+  
+    UICollectionView *contentView = [[UICollectionView alloc] initWithFrame:tableFrame collectionViewLayout:layout];
+  
+    [contentView registerClass:[JSBubbleMessageCell class] forCellWithReuseIdentifier:kReuseCellIdentifier];
+    contentView.dataSource = self;
+    contentView.delegate = self;
+    [self.view addSubview:contentView];
+    _contentView = contentView;
     
     [self setBackgroundColor:[UIColor js_backgroundColorClassic]];
     
@@ -81,7 +87,7 @@
         allowsPan = [self.delegate allowsPanToDismissKeyboard];
     }
     
-    UIPanGestureRecognizer *pan = allowsPan ? _tableView.panGestureRecognizer : nil;
+    UIPanGestureRecognizer *pan = allowsPan ? _contentView.panGestureRecognizer : nil;
     
     JSMessageInputView *inputView = [[JSMessageInputView alloc] initWithFrame:inputFrame
                                                                         style:inputViewStyle
@@ -90,7 +96,7 @@
     
     if (!allowsPan) {
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGestureRecognizer:)];
-        [_tableView addGestureRecognizer:tap];
+        [_contentView addGestureRecognizer:tap];
     }
     
     if ([self.delegate respondsToSelector:@selector(sendButtonForInputView)]) {
@@ -167,7 +173,7 @@
     [_messageInputView.textView removeObserver:self forKeyPath:@"contentSize"];
     _delegate = nil;
     _dataSource = nil;
-    _tableView = nil;
+    _contentView = nil;
     _messageInputView = nil;
 }
 
@@ -186,8 +192,8 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    [self.tableView reloadData];
-    [self.tableView setNeedsLayout];
+    [self.contentView reloadData];
+    [self.contentView setNeedsLayout];
 }
 
 #pragma mark - Actions
@@ -204,19 +210,19 @@
     [self.messageInputView.textView resignFirstResponder];
 }
 
-#pragma mark - Table view data source
+#pragma mark - UICollectionViewDataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 1;
+  return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 0;
+  return 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     JSBubbleMessageType type = [self.delegate messageTypeForRowAtIndexPath:indexPath];
     
@@ -232,7 +238,7 @@
         displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
     }
     
-    NSString *CellIdentifier = nil;
+    NSString *CellIdentifier = kReuseCellIdentifier;
     if ([self.delegate respondsToSelector:@selector(customCellIdentifierForRowAtIndexPath:)]) {
         CellIdentifier = [self.delegate customCellIdentifierForRowAtIndexPath:indexPath];
     }
@@ -241,20 +247,16 @@
         CellIdentifier = [NSString stringWithFormat:@"JSMessageCell_%d_%d_%d_%d", (int)type, displayTimestamp, avatar != nil, [message sender] != nil];
     }
     
-    JSBubbleMessageCell *cell = (JSBubbleMessageCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    JSBubbleMessageCell *cell = (JSBubbleMessageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    if (!cell) {
-        cell = [[JSBubbleMessageCell alloc] initWithBubbleType:type
-                                               bubbleImageView:bubbleImageView
-                                                       message:message
-                                             displaysTimestamp:displayTimestamp
-                                                     hasAvatar:avatar != nil
-                                               reuseIdentifier:CellIdentifier];
-    }
-    
+    [cell configureWithType:type
+            bubbleImageView:bubbleImageView
+                    message:message
+          displaysTimestamp:displayTimestamp
+                     avatar:avatar != nil];
     [cell setMessage:message];
     [cell setAvatarImageView:avatar];
-    [cell setBackgroundColor:tableView.backgroundColor];
+    [cell setBackgroundColor:collectionView.backgroundColor];
     
 	#if TARGET_IPHONE_SIMULATOR
         cell.bubbleView.textView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -269,15 +271,15 @@
     return cell;
 }
 
-#pragma mark - Table view delegate
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - UICollectionViewDelegate methods
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<JSMessageData> message = [self.dataSource messageForRowAtIndexPath:indexPath];
     UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
-    
-    return [JSBubbleMessageCell neededHeightForBubbleMessageCellWithMessage:message
-                                                                     avatar:avatar != nil];
+      
+    CGFloat height =  [JSBubbleMessageCell neededHeightForBubbleMessageCellWithMessage:message
+                                                                                avatar:avatar != nil];
+    return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }
 
 #pragma mark - Messages view controller
@@ -286,14 +288,13 @@
 {
     [self.messageInputView.textView setText:nil];
     [self textViewDidChange:self.messageInputView.textView];
-    [self.tableView reloadData];
+    [self.contentView reloadData];
 }
 
 - (void)setBackgroundColor:(UIColor *)color
 {
     self.view.backgroundColor = color;
-    _tableView.backgroundColor = color;
-    _tableView.separatorColor = color;
+    _contentView.backgroundColor = color;
 }
 
 - (void)scrollToBottomAnimated:(BOOL)animated
@@ -301,25 +302,24 @@
 	if (![self shouldAllowScroll])
         return;
 	
-    NSInteger rows = [self.tableView numberOfRowsInSection:0];
+    NSInteger rows = [self.contentView numberOfItemsInSection:0];
     
     if (rows > 0) {
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rows - 1 inSection:0]
-                              atScrollPosition:UITableViewScrollPositionBottom
+        [self.contentView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:rows - 1 inSection:0]
+                              atScrollPosition:UICollectionViewScrollPositionBottom
                                       animated:animated];
     }
 }
 
 - (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath
-			  atScrollPosition:(UITableViewScrollPosition)position
+			  atScrollPosition:(UICollectionViewScrollPosition)position
 					  animated:(BOOL)animated
 {
 	if (![self shouldAllowScroll])
         return;
-	
-	[self.tableView scrollToRowAtIndexPath:indexPath
-						  atScrollPosition:position
-								  animated:animated];
+  [self.contentView scrollToItemAtIndexPath:indexPath
+                           atScrollPosition:position
+                                   animated:animated];
 }
 
 - (BOOL)shouldAllowScroll
@@ -387,7 +387,7 @@
     if (changeInHeight != 0.0f) {
         [UIView animateWithDuration:0.25f
                          animations:^{
-                             [self setTableViewInsetsWithBottomValue:self.tableView.contentInset.bottom + changeInHeight];
+                             [self setContentViewInsetsWithBottomValue:self.contentView.contentInset.bottom + changeInHeight];
                              
                              [self scrollToBottomAnimated:NO];
                              
@@ -427,14 +427,14 @@
     }
 }
 
-- (void)setTableViewInsetsWithBottomValue:(CGFloat)bottom
+- (void)setContentViewInsetsWithBottomValue:(CGFloat)bottom
 {
-    UIEdgeInsets insets = [self tableViewInsetsWithBottomValue:bottom];
-    self.tableView.contentInset = insets;
-    self.tableView.scrollIndicatorInsets = insets;
+    UIEdgeInsets insets = [self contentViewInsetsWithBottomValue:bottom];
+    self.contentView.contentInset = insets;
+    self.contentView.scrollIndicatorInsets = insets;
 }
 
-- (UIEdgeInsets)tableViewInsetsWithBottomValue:(CGFloat)bottom
+- (UIEdgeInsets)contentViewInsetsWithBottomValue:(CGFloat)bottom
 {
     UIEdgeInsets insets = UIEdgeInsetsZero;
     
@@ -496,7 +496,7 @@
 																  inputViewFrame.size.width,
 																  inputViewFrame.size.height);
 
-                         [self setTableViewInsetsWithBottomValue:self.view.frame.size.height
+                         [self setContentViewInsetsWithBottomValue:self.view.frame.size.height
                                                                 - self.messageInputView.frame.origin.y
                                                                 - inputViewFrame.size.height];
                      }

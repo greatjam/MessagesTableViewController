@@ -24,6 +24,8 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
 
 @interface JSBubbleMessageCell()
 
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
+
 - (void)setup;
 - (void)configureTimestampLabel;
 - (void)configureAvatarImageView:(UIImageView *)imageView forMessageType:(JSBubbleMessageType)type;
@@ -55,21 +57,12 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
 - (void)setup
 {
     self.backgroundColor = [UIColor clearColor];
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
-    self.accessoryType = UITableViewCellAccessoryNone;
-    self.accessoryView = nil;
-    
-    self.imageView.image = nil;
-    self.imageView.hidden = YES;
-    self.textLabel.text = nil;
-    self.textLabel.hidden = YES;
-    self.detailTextLabel.text = nil;
-    self.detailTextLabel.hidden = YES;
-    
-    UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                             action:@selector(handleLongPressGesture:)];
-    [recognizer setMinimumPressDuration:0.4f];
-    [self addGestureRecognizer:recognizer];
+    if (!_longPressGesture) {
+        _longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                           action:@selector(handleLongPressGesture:)];
+        [_longPressGesture setMinimumPressDuration:0.4f];
+        [self addGestureRecognizer:_longPressGesture];
+    }
 }
 
 - (void)configureTimestampLabel
@@ -93,6 +86,7 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
 
 - (void)configureAvatarImageView:(UIImageView *)imageView forMessageType:(JSBubbleMessageType)type
 {
+  [self setup];
     CGFloat avatarX = 0.5f;
     if (type == JSBubbleMessageTypeOutgoing) {
         avatarX = (self.contentView.frame.size.width - kJSAvatarImageSize);
@@ -175,15 +169,6 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
 
 #pragma mark - Initialization
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        [self setup];
-    }
-    return self;
-}
-
 - (instancetype)initWithBubbleType:(JSBubbleMessageType)type
                    bubbleImageView:(UIImageView *)bubbleImageView
                            message:(id<JSMessageData>)message
@@ -191,7 +176,7 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
                          hasAvatar:(BOOL)hasAvatar
                    reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [self initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
+    self = [self init];
     if (self) {
         [self configureWithType:type
                 bubbleImageView:bubbleImageView
@@ -211,7 +196,7 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - TableViewCell
+#pragma mark - CollectionViewCell
 
 - (void)prepareForReuse
 {
