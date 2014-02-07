@@ -116,7 +116,7 @@
 
 - (BOOL)shouldDisplayTimestampForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row % 3 == 0) {
+    if (indexPath.row % 5 == 0) {
         return YES;
     }
     return NO;

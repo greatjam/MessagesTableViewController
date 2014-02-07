@@ -110,6 +110,7 @@
  *  @return The height required for the frame of the cell in order for the cell to display the entire contents of its subviews.
  */
 + (CGFloat)neededHeightForBubbleMessageCellWithMessage:(id<JSMessageData>)message
+                                             timeStamp:(BOOL)displayTimpStamp
                                                 avatar:(BOOL)hasAvatar;
 
 @end

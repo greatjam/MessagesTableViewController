@@ -278,6 +278,7 @@ static NSString * const kReuseCellIdentifier = @"kReuseCellIdentifier";
     UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
       
     CGFloat height =  [JSBubbleMessageCell neededHeightForBubbleMessageCellWithMessage:message
+                                                                             timeStamp:[self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath]
                                                                                 avatar:avatar != nil];
     return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }

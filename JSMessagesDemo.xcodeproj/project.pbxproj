@@ -107,6 +107,7 @@
 		88E43C821830147E0045E52D /* bubble-classic-typing.png in Resources */ = {isa = PBXBuildFile; fileRef = 88E43C801830147E0045E52D /* bubble-classic-typing.png */; };
 		88E43C831830147E0045E52D /* bubble-classic-typing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 88E43C811830147E0045E52D /* bubble-classic-typing@2x.png */; };
 		FA22998F18A3620C006F674B /* JSMessagesLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = FA22998E18A3620C006F674B /* JSMessagesLayout.m */; };
+		FAB129E818A4B33A0038D6A7 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB129E718A4B33A0038D6A7 /* Reveal.framework */; };
 		FF5F1C19A2B14956BCA42EBB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFF9601294443728D9481E0 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -218,6 +219,7 @@
 		A8C230F1717F4008B2BFAEA6 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		FA22998D18A3620C006F674B /* JSMessagesLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMessagesLayout.h; sourceTree = "<group>"; };
 		FA22998E18A3620C006F674B /* JSMessagesLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMessagesLayout.m; sourceTree = "<group>"; };
+		FAB129E718A4B33A0038D6A7 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +230,7 @@
 				885BAC4F185421D4004DCD34 /* QuartzCore.framework in Frameworks */,
 				88A3FB4C182E079E00705327 /* CoreGraphics.framework in Frameworks */,
 				88A3FB4E182E079E00705327 /* UIKit.framework in Frameworks */,
+				FAB129E818A4B33A0038D6A7 /* Reveal.framework in Frameworks */,
 				88A3FB4A182E079E00705327 /* Foundation.framework in Frameworks */,
 				6404600EC231419EB620AF48 /* libPods.a in Frameworks */,
 			);
@@ -275,6 +278,7 @@
 		88A3FB48182E079E00705327 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FAB129E718A4B33A0038D6A7 /* Reveal.framework */,
 				88A3FB4B182E079E00705327 /* CoreGraphics.framework */,
 				88A3FB49182E079E00705327 /* Foundation.framework */,
 				885BAC4D185421C8004DCD34 /* QuartzCore.framework */,
@@ -875,6 +879,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/alex/workspace/interests/MessagesTableViewController,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JSMessagesDemo/JSMessagesDemo-Prefix.pch";
 				INFOPLIST_FILE = "JSMessagesDemo/JSMessagesDemo-Info.plist";
@@ -890,6 +898,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/alex/workspace/interests/MessagesTableViewController,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JSMessagesDemo/JSMessagesDemo-Prefix.pch";
 				INFOPLIST_FILE = "JSMessagesDemo/JSMessagesDemo-Info.plist";

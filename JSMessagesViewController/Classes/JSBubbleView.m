@@ -18,7 +18,7 @@
 #import "JSAvatarImageFactory.h"
 #import "NSString+JSMessagesView.h"
 
-#define kMarginTop 8.0f
+#define kMarginTop 1.0f
 #define kMarginBottom 4.0f
 #define kPaddingTop 4.0f
 #define kPaddingBottom 8.0f
